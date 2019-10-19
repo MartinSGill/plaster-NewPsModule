@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<plasterManifest schemaVersion="1.1" templateType="Project"
+  xmlns="http://www.microsoft.com/schemas/PowerShell/Plaster/v1">
+  <metadata>
+    <name>NewPsModule</name>
+    <id>73def21d-b7fb-4b9e-9230-8e820bc66490</id>
+    <version>1.0.0</version>
+    <title>New Powershell Module</title>
+    <description>Template for script-based powershell module.</description>
+    <author>Martin Gill</author>
+    <tags>Module, ModuleManifes</tags>
+  </metadata>
+
+  <!--
+    ██████╗  █████╗ ██████╗  █████╗ ███╗   ███╗███████╗████████╗███████╗██████╗ ███████╗
+    ██╔══██╗██╔══██╗██╔══██╗██╔══██╗████╗ ████║██╔════╝╚══██╔══╝██╔════╝██╔══██╗██╔════╝
+    ██████╔╝███████║██████╔╝███████║██╔████╔██║█████╗     ██║   █████╗  ██████╔╝███████╗
+    ██╔═══╝ ██╔══██║██╔══██╗██╔══██║██║╚██╔╝██║██╔══╝     ██║   ██╔══╝  ██╔══██╗╚════██║
+    ██║     ██║  ██║██║  ██║██║  ██║██║ ╚═╝ ██║███████╗   ██║   ███████╗██║  ██║███████║
+    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═╝╚══════╝
+  -->
+  <parameters>
+    <parameter name='ModuleName' type='text' prompt='Enter the name of the module'/>
+    <parameter name='ModuleDesc' type='text' prompt='Enter a description of the module (required for publishing to the PowerShell Gallery)'/>
+    <parameter name='Version' type='text' prompt='Enter the version number of the module' default='0.1.0'/>
+    <parameter name='FullName' type='user-fullname' prompt='Enter your full name' store='text' />
+    <parameter name='License' type='choice' prompt='Select a license (see http://choosealicense.com for help choosing):' default='0' store='text'>
+      <choice label='&amp;None' help="No license." value="None"/>
+      <choice label='&amp;Apache' help="Adds an Apache license file." value="Apache"/>
+      <choice label='&amp;MIT' help="Adds an MIT license file." value="MIT"/>
+    </parameter>
+    <parameter name='Options' type='multichoice' prompt='Select one or more of the following tooling options:' default='1,2,3,4' store='text' >
+      <choice label='&amp;None' help="No tooling options specified." value="None"/>
+      <choice label='Add &amp;Git .gitignore file' help="Adds a .gitignore file." value="Git"/>
+      <choice label='Add &amp;EditorConfig .editorconfig file' help="Adds a .editorconfig file." value="EditorConfig"/>
+      <choice label='Add PSScript&amp;Analyzer support' help="Adds script analysis support using PSScriptAnalyzer." value="PSScriptAnalyzer"/>
+      <choice label='Add plat&amp;yPS help generation support' help="Adds help build support using platyPS." value="platyPS"/>
+    </parameter>
+    <parameter name='Editor' type='choice' prompt='Select one of the supported script editors for better editor integration (or None):' default='0' store='text' >
+      <choice label='&amp;None' help="No editor specified." value="None"/>
+      <choice label='Visual Studio &amp;Code' help="Your editor is Visual Studio Code." value="VSCode"/>
+    </parameter>
+  </parameters>
+
+  <!--
+     ██████╗ ██████╗ ███╗   ██╗████████╗███████╗███╗   ██╗████████╗
+    ██╔════╝██╔═══██╗████╗  ██║╚══██╔══╝██╔════╝████╗  ██║╚══██╔══╝
+    ██║     ██║   ██║██╔██╗ ██║   ██║   █████╗  ██╔██╗ ██║   ██║
+    ██║     ██║   ██║██║╚██╗██║   ██║   ██╔══╝  ██║╚██╗██║   ██║
+    ╚██████╗╚██████╔╝██║ ╚████║   ██║   ███████╗██║ ╚████║   ██║
+     ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝   ╚═╝
+  -->
+  <content>
+    <message>&#10;&#10;Scaffolding your PowerShell Module...&#10;&#10;&#10;</message>
+
+    <message  condition='$PLASTER_PARAM_Options -contains "Git"'>-Git</message>
+    <file condition='$PLASTER_PARAM_Options -contains "Git"'
+          source="_gitignore"
+          destination=".gitignore" />
+    <file condition='$PLASTER_PARAM_Options -contains "Git"'
+          source="_gitattributes"
+          destination=".gitattributes" />
+
+    <message  condition='$PLASTER_PARAM_Options -contains "EditorConfig"'>-EditorConfig</message>
+    <file condition='$PLASTER_PARAM_Options -contains "EditorConfig"'
+          source=".editorconfig"
+          destination=".editorconfig" />
+
+    <message  condition='$PLASTER_PARAM_Options -contains "EditorConfig"'>-Module</message>
+    <newModuleManifest destination='src\${PLASTER_PARAM_ModuleName}.psd1'
+                          moduleVersion='$PLASTER_PARAM_Version'
+                          rootModule='${PLASTER_PARAM_ModuleName}.psm1'
+                          author='$PLASTER_PARAM_FullName'
+                          description='$PLASTER_PARAM_ModuleDesc'
+                          encoding='UTF8'/>
+    <templateFile source="_readme.md"
+                  destination="readme.md"
+                  encoding='UTF8-NoBOM' />
+    <templateFile source="_ReleaseNotes.md"
+                  destination="ReleaseNotes.md"
+                  encoding='UTF8-NoBOM' />
+    <file source="src\Module.psm1"
+          destination="src\${PLASTER_PARAM_ModuleName}.psm1" />
+    <file source="src\private\PrivateFunction.ps1"
+          destination="src\private\PrivateFunction.ps1" />
+    <file source="src\public\New-ExampleCmdlet.ps1"
+          destination="src\public\New-ExampleCmdlet.ps1" />
+
+    <message  condition='$PLASTER_PARAM_Options -contains "PSScriptAnalyzer"'>-PSScriptAnalyzer</message>
+    <file condition='$PLASTER_PARAM_Options -contains "PSScriptAnalyzer"'
+          source='ScriptAnalyzerSettings.psd1'
+          destination='src\ScriptAnalyzerSettings.psd1' />
+
+    <message  condition='$PLASTER_PARAM_Options -contains "PSScriptAnalyzer"'>-platyPS</message>
+    <templateFile condition="$PLASTER_PARAM_Options -contains 'platyPS'"
+                  source='docs\en-US\about_Module.help.md'
+                  destination='docs\en-US\about_${PLASTER_PARAM_ModuleName}.help.md'/>
+
+    <message  condition="$PLASTER_PARAM_Options -notcontains 'platyPS'">-Docs</message>
+    <templateFile condition="$PLASTER_PARAM_Options -notcontains 'platyPS'"
+                  source='docs\en-US\about_Module.help.txt'
+                  destination='src\en-US\about_${PLASTER_PARAM_ModuleName}.help.txt'/>
+
+    <message  condition="$PLASTER_PARAM_Options -notcontains 'None'">-License</message>
+    <templateFile condition="$PLASTER_PARAM_License -eq 'Apache'"
+                  source='license\Apache.txt'
+                  destination='LICENSE'
+                  encoding="UTF8-NoBOM"/>
+    <templateFile condition="$PLASTER_PARAM_License -eq 'MIT'"
+                  source='license\MIT.txt'
+                  destination='LICENSE'
+                  encoding="UTF8-NoBOM" />
+
+    <message  condition="$PLASTER_PARAM_Editor -notcontains 'None'">-Editor</message>
+    <file condition="($PLASTER_PARAM_Editor -eq 'VSCode') -and ($PLASTER_PARAM_Options -contains 'PSScriptAnalyzer')"
+          source='editor\VSCode\settings-scriptanalyzer.json'
+          destination='.vscode\settings.json' />
+    <file condition="($PLASTER_PARAM_Editor -eq 'VSCode') -and ($PLASTER_PARAM_Options -notcontains 'PSScriptAnalyzer')"
+          source='editor\VSCode\settings.json'
+          destination='.vscode\settings.json' />
+    <file condition="($PLASTER_PARAM_Editor -eq 'VSCode') -and ($PLASTER_PARAM_Options -notcontains 'PSScriptAnalyzer')"
+          source='editor\VSCode\extensions.json'
+          destination='.vscode\extensions.json' />
+
+    <message>&#10;&#10;Your PowerShell Module is ready.&#10;&#10;&#10;</message>
+  </content>
+</plasterManifest>

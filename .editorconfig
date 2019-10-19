@@ -1,0 +1,14 @@
+# EditorConfig is awesome: https://EditorConfig.org
+root = true
+
+# Use BOM to allow Unicode characters in scripts without character codes.
+[*.{ps1,psd1,psm1}]
+indent_style = space
+indent_size = 4
+end_of_line = crlf
+insert_final_newline = true
+charset = utf-8-bom
+
+[*.{xml,json,yaml,yml}]
+indent_style = space
+indent_size = 2
